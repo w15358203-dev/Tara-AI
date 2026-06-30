@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Tara AI — Free AI video prompt generator for Veo 3, Sora, Runway, Kling and more. Create stunning AI videos instantly.">
+<title>Tara AI — Create AI Videos Instantly</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --bg3:#18181f;
+  --white:#ffffff;
+  --text:#f0f0f5;
+  --text2:#9090a8;
+  --text3:#5a5a72;
+  --accent:#7c5cfc;
+  --accent2:#a78bfa;
+  --accent-glow:rgba(124,92,252,.18);
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --radius:12px;
+  --radius2:20px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{display:block}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(10,10,15,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.15rem;color:var(--white)}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:14px}
+.nav-links{display:flex;gap:.15rem;align-items:center}
+.nav-links a{padding:6px 13px;border-radius:var(--radius);font-size:13.5px;font-weight:500;color:var(--text2);transition:color .15s,background .15s}
+.nav-links a:hover{color:var(--white);background:rgba(255,255,255,.06)}
+.nav-links a.active{color:var(--white)}
+.nav-cta{background:var(--accent)!important;color:var(--white)!important;padding:7px 16px!important;border-radius:var(--radius)!important;font-weight:600!important;font-size:13px!important}
+.nav-cta:hover{background:#6b4de6!important}
+
+/* HERO */
+.hero{padding:5rem 1.5rem 3.5rem;text-align:center;max-width:720px;margin:0 auto;position:relative}
+.hero-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.3);border-radius:30px;padding:5px 14px 5px 8px;font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:1.75rem}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(2rem,6vw,3.4rem);line-height:1.08;letter-spacing:-.02em;color:var(--white);margin-bottom:1.1rem}
+h1 .grad{background:linear-gradient(90deg,#7c5cfc,#c084fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--text2);font-size:1.05rem;max-width:480px;margin:0 auto 2.25rem;line-height:1.65}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--accent);color:#fff;padding:13px 28px;border-radius:var(--radius);font-weight:600;font-size:15px;border:none;cursor:pointer;transition:background .15s,transform .1s;display:inline-block}
+.btn-primary:hover{background:#6b4de6;transform:translateY(-1px)}
+.btn-ghost{border:1px solid var(--border2);color:var(--text);padding:13px 28px;border-radius:var(--radius);font-weight:500;font-size:15px;background:transparent;cursor:pointer;transition:border-color .15s,background .15s;display:inline-block}
+.btn-ghost:hover{border-color:var(--accent);background:var(--accent-glow);color:var(--white)}
+
+/* PLATFORMS */
+.platforms{padding:1rem 1.5rem 3rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:640px;margin:0 auto}
+.pbadge{background:var(--bg3);border:1px solid var(--border);border-radius:30px;padding:6px 15px;font-size:12.5px;color:var(--text2);font-weight:500;display:flex;align-items:center;gap:5px}
+.pbadge.hot{border-color:rgba(124,92,252,.4);color:var(--accent2)}
+.pbadge .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);display:inline-block}
+
+/* SECTION */
+.sec{padding:2rem 1.5rem;max-width:860px;margin:0 auto}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:1.25rem}
+
+/* TOOLS GRID */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tool-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:1.25rem;cursor:pointer;transition:border-color .15s,background .15s;display:block}
+.tool-card:hover{border-color:rgba(124,92,252,.4);background:rgba(124,92,252,.05)}
+.tc-icon{font-size:1.6rem;margin-bottom:10px}
+.tc-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.new-tag{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 7px;border-radius:8px}
+.tc-desc{font-size:12.5px;color:var(--text2);line-height:1.5}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:0;position:relative;padding-bottom:1.5rem}
+.step:last-child{padding-bottom:0}
+.step-left{display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--accent-glow);border:1.5px solid rgba(124,92,252,.4);color:var(--accent2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-line{width:1.5px;flex:1;background:var(--border);margin-top:6px}
+.step:last-child .step-line{display:none}
+.step-body{padding-left:12px;padding-top:4px}
+.step-body h4{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
+.step-body p{font-size:13px;color:var(--text2)}
+
+/* FEATS */
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1.5rem}
+.feat{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:1rem}
+.feat-icon{font-size:1.25rem;margin-bottom:7px}
+.feat h4{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.feat p{font-size:12px;color:var(--text2)}
+
+/* CTA BANNER */
+.cta-banner{background:linear-gradient(135deg,rgba(124,92,252,.2),rgba(168,139,250,.1));border:1px solid rgba(124,92,252,.25);border-radius:20px;padding:2.25rem 1.5rem;text-align:center;margin:1.5rem 1.5rem}
+.cta-banner h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:.4rem}
+.cta-banner p{font-size:13.5px;color:var(--text2);margin-bottom:1.25rem}
+
+footer{border-top:1px solid var(--border);padding:1.75rem 1.5rem;text-align:center}
+footer p{font-size:12px;color:var(--text3)}
+footer a{color:var(--text2);font-size:12px;margin:0 10px;transition:color .12s}
+footer a:hover{color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><div class="logo-mark">✦</div>Tara AI</div>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="generator.html">Generator</a>
+    <a href="blog.html">Learn</a>
+    <a href="signup.html" class="nav-cta">Get started free</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-pill"><span class="pill-dot"></span>Veo 3 & Sora support just added</div>
+  <h1>Create AI videos with<br><span class="grad">perfect prompts</span></h1>
+  <p class="hero-sub">Generate studio-quality prompts for any AI video platform — with voiceover, style, and cinematic control built in.</p>
+  <div class="hero-btns">
+    <a href="generator.html" class="btn-primary">Start creating free</a>
+    <a href="blog.html" class="btn-ghost">See how it works</a>
+  </div>
+</div>
+
+<div class="platforms">
+  <span class="pbadge hot"><span class="dot"></span>Veo 3 NEW</span>
+  <span class="pbadge">Sora</span>
+  <span class="pbadge">Runway Gen-4</span>
+  <span class="pbadge">Kling AI</span>
+  <span class="pbadge">Pika Labs</span>
+  <span class="pbadge">Hailuo</span>
+  <span class="pbadge">Luma Dream</span>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Supported platforms</div>
+  <div class="tools-grid">
+    <a href="generator.html?tool=veo3" class="tool-card">
+      <div class="tc-icon">🎬</div>
+      <div class="tc-name">Veo 3 <span class="new-tag">NEW</span></div>
+      <div class="tc-desc">Google's most advanced model. Supports voiceover, audio, and 8K cinematic quality.</div>
+    </a>
+    <a href="generator.html?tool=sora" class="tool-card">
+      <div class="tc-icon">🌐</div>
+      <div class="tc-name">Sora</div>
+      <div class="tc-desc">OpenAI's text-to-video — best for realistic physics and fluid motion.</div>
+    </a>
+    <a href="generator.html?tool=runway" class="tool-card">
+      <div class="tc-icon">✈️</div>
+      <div class="tc-name">Runway Gen-4</div>
+      <div class="tc-desc">Professional-grade video with precise motion and color grading control.</div>
+    </a>
+    <a href="generator.html?tool=kling" class="tool-card">
+      <div class="tc-icon">⚡</div>
+      <div class="tc-name">Kling AI</div>
+      <div class="tc-desc">Fast, high-quality video with great anime and cinematic style options.</div>
+    </a>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">How it works</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-body"><h4>Describe your scene</h4><p>Write what you want to see — a place, a person, a moment, or an idea.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-body"><h4>Add voiceover and style</h4><p>Include voiceover script, camera movement, lighting, and mood for full creative control.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-body"><h4>Copy and generate</h4><p>Paste the optimized prompt directly into Veo 3, Sora, Runway or any AI video tool.</p></div>
+    </div>
+  </div>
+  <div class="feats">
+    <div class="feat"><div class="feat-icon">🎙️</div><h4>Voiceover prompts</h4><p>Built-in voiceover and dialogue fields for every tool.</p></div>
+    <div class="feat"><div class="feat-icon">🆓</div><h4>100% free</h4><p>No credit card. Free forever plan available.</p></div>
+    <div class="feat"><div class="feat-icon">⚡</div><h4>Instant output</h4><p>Get a pro-quality prompt in under 5 seconds.</p></div>
+    <div class="feat"><div class="feat-icon">💾</div><h4>Save prompts</h4><p>Create an account to save and reuse your best work.</p></div>
+  </div>
+</div>
+
+<div class="cta-banner">
+  <h2>Ready to create your first AI video?</h2>
+  <p>Join thousands of creators already using Tara AI — free forever.</p>
+  <a href="signup.html" class="btn-primary">Create free account</a>
+</div>
+
+<footer>
+  <p>Tara AI &copy; 2025 — AI Video Prompt Generator</p>
+  <p style="margin-top:8px"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="blog.html">Blog</a><a href="signup.html">Sign Up</a></p>
+</footer>
+
+</body>
+</html>

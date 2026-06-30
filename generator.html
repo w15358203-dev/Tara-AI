@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Tara AI Video Generator — Create prompts for Veo 3, Sora, Runway, Kling with voiceover support.">
+<title>Video Generator — Tara AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#18181f;--bg4:#1e1e28;
+  --white:#ffffff;--text:#f0f0f5;--text2:#9090a8;--text3:#5a5a72;
+  --accent:#7c5cfc;--accent2:#a78bfa;--accent-glow:rgba(124,92,252,.15);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --radius:12px;--green:#22c55e;--green-bg:rgba(34,197,94,.1);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(10,10,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.15rem;color:var(--white)}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:14px}
+.nav-links{display:flex;gap:.1rem;align-items:center}
+.nav-links a{padding:6px 13px;border-radius:var(--radius);font-size:13.5px;font-weight:500;color:var(--text2);transition:color .12s,background .12s}
+.nav-links a:hover{color:var(--white);background:rgba(255,255,255,.06)}
+.nav-links a.active{color:var(--white)}
+.nav-cta{background:var(--accent)!important;color:var(--white)!important;padding:7px 16px!important;font-weight:600!important;border-radius:var(--radius)!important;font-size:13px!important}
+
+.page-head{padding:2rem 1.5rem .5rem;max-width:900px;margin:0 auto}
+.page-head h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:4px}
+.page-head p{font-size:14px;color:var(--text2)}
+
+.wrap{padding:1.25rem 1.5rem 3rem;max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 240px;gap:16px;align-items:start}
+@media(max-width:640px){.wrap{grid-template-columns:1fr}}
+
+/* TOOL TABS */
+.tool-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.ttab{padding:7px 15px;border-radius:30px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:6px}
+.ttab:hover{border-color:var(--border2);color:var(--text)}
+.ttab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ttab .hot{font-size:10px;font-weight:700;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:8px}
+.ttab:not(.active) .hot{background:var(--accent-glow);color:var(--accent2)}
+
+.tool-panel{display:none}.tool-panel.active{display:block}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.card-head{padding:1rem 1.25rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ch-icon{font-size:1.3rem;flex-shrink:0}
+.ch-text h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:.98rem;font-weight:700;color:var(--white)}
+.ch-text p{font-size:12px;color:var(--text3)}
+.card-body{padding:1.25rem}
+
+/* FIELDS */
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.01em}
+.field textarea,.field input,.field select{width:100%;font-family:'Inter',sans-serif;font-size:13.5px;padding:10px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg4);color:var(--text);outline:none;transition:border-color .15s;resize:none}
+.field textarea:focus,.field input:focus,.field select:focus{border-color:rgba(124,92,252,.5);background:var(--bg3)}
+.field textarea::placeholder,.field input::placeholder{color:var(--text3)}
+select option{background:var(--bg3)}
+
+/* VOICE BOX */
+.voice-box{background:rgba(124,92,252,.07);border:1px solid rgba(124,92,252,.2);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+.voice-box .vb-label{font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.voice-box .vb-label span{font-size:1rem}
+.voice-box textarea,.voice-box input{width:100%;font-family:'Inter',sans-serif;font-size:13.5px;padding:10px 13px;border:1px solid rgba(124,92,252,.2);border-radius:var(--radius);background:rgba(124,92,252,.05);color:var(--text);outline:none;resize:none;margin-bottom:8px}
+.voice-box textarea:focus,.voice-box input:focus{border-color:rgba(124,92,252,.5)}
+.voice-box textarea::placeholder,.voice-box input::placeholder{color:var(--text3)}
+.voice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.voice-row select{font-family:'Inter',sans-serif;font-size:13px;padding:9px 11px;border:1px solid rgba(124,92,252,.2);border-radius:var(--radius);background:rgba(124,92,252,.05);color:var(--text);outline:none}
+
+/* CHIPS */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12.5px;font-weight:500;cursor:pointer;transition:all .12s;user-select:none}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.active{background:var(--accent-glow);border-color:rgba(124,92,252,.45);color:var(--accent2)}
+
+/* VEO BANNER */
+.veo-banner{background:linear-gradient(135deg,rgba(124,92,252,.12),rgba(129,140,248,.08));border:1px solid rgba(124,92,252,.25);border-radius:var(--radius);padding:.9rem 1rem;margin-bottom:1rem}
+.veo-banner h4{font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:4px}
+.veo-banner p{font-size:12px;color:var(--text2);line-height:1.55}
+.veo-feats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.vf{font-size:11px;font-weight:600;background:rgba(124,92,252,.15);border:1px solid rgba(124,92,252,.25);color:var(--accent2);padding:3px 10px;border-radius:10px}
+
+/* TIP BOX */
+.tip-box{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#86efac;line-height:1.6}
+.tip-box strong{color:#4ade80;font-weight:600}
+
+/* GEN BUTTON */
+.gen-btn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;letter-spacing:.01em}
+.gen-btn:hover{background:#6b4de6;transform:translateY(-1px)}
+.gen-btn:active{transform:none}
+
+/* OUTPUT */
+.output-wrap{margin-top:1.1rem;display:none}
+.out-label{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.out-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word;min-height:90px}
+.out-actions{display:flex;gap:8px;margin-top:10px}
+.btn-sec{flex:1;padding:9px;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:border-color .12s,color .12s}
+.btn-sec:hover{border-color:rgba(124,92,252,.4);color:var(--accent2)}
+.copy-ok{font-size:12px;color:var(--green);margin-top:6px;display:none;font-weight:500}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:12px}
+.sb-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:1.1rem}
+.sb-card h3{font-size:13px;font-weight:600;color:var(--white);margin-bottom:.8rem}
+.saved-empty{font-size:12.5px;color:var(--text3);text-align:center;padding:.5rem 0}
+.saved-item{padding:.55rem 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.saved-item:last-child{border-bottom:none}
+.si-text{font-size:12px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px}
+.si-load{font-size:11.5px;color:var(--accent2);cursor:pointer;font-weight:500;flex-shrink:0}
+.tips-list{display:flex;flex-direction:column;gap:8px}
+.tip-row{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text2)}
+.tip-num{color:var(--accent2);font-weight:700;font-size:12px;flex-shrink:0;margin-top:1px}
+
+footer{border-top:1px solid var(--border);padding:1.5rem;text-align:center;margin-top:1rem}
+footer p{font-size:12px;color:var(--text3)}
+footer a{color:var(--text2);font-size:12px;margin:0 8px}
+footer a:hover{color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><div class="logo-mark">✦</div>Tara AI</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="generator.html" class="active">Generator</a>
+    <a href="blog.html">Learn</a>
+    <a href="signup.html" class="nav-cta">Sign up free</a>
+  </div>
+</nav>
+
+<div class="page-head">
+  <h1>AI video prompt generator</h1>
+  <p>Pick your platform, describe your scene, add voiceover — get a perfect prompt instantly</p>
+</div>
+
+<div class="wrap">
+  <div class="main-col">
+    <div class="tool-tabs">
+      <div class="ttab active" onclick="switchTool('veo3',this)">🎬 Veo 3 <span class="hot">NEW</span></div>
+      <div class="ttab" onclick="switchTool('sora',this)">🌐 Sora</div>
+      <div class="ttab" onclick="switchTool('runway',this)">✈️ Runway</div>
+      <div class="ttab" onclick="switchTool('kling',this)">⚡ Kling</div>
+      <div class="ttab" onclick="switchTool('pika',this)">🎨 Pika</div>
+    </div>
+
+    <!-- VEO 3 -->
+    <div class="tool-panel active" id="panel-veo3">
+      <div class="veo-banner">
+        <h4>Google Veo 3 — Most Advanced AI Video Model</h4>
+        <p>Veo 3 generates audio, voiceover, character dialogue, and cinematic visuals natively. Include voiceover and sound details for the best output. Video length is defined in your prompt description.</p>
+        <div class="veo-feats"><span class="vf">Native audio</span><span class="vf">Voiceover</span><span class="vf">Dialogue</span><span class="vf">8K quality</span></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="ch-icon">🎬</span><div class="ch-text"><h2>Veo 3 prompt builder</h2><p>Google DeepMind — latest model 2025</p></div></div>
+        <div class="card-body">
+          <div class="field"><label>SCENE DESCRIPTION</label><textarea id="veo3-scene" rows="3" placeholder="A woman walks through rain-soaked Tokyo streets at midnight, neon lights reflecting in puddles, lasting 30 seconds…"></textarea></div>
+          <div class="voice-box">
+            <div class="vb-label"><span>🎙️</span> Voiceover & Audio</div>
+            <textarea id="veo3-vo" rows="2" placeholder="Voiceover: 'In the heart of the city, she found her silence...'"></textarea>
+            <div class="voice-row">
+              <select id="veo3-voice-type"><option value="warm narrator">Warm narrator</option><option value="cinematic deep voice">Cinematic deep</option><option value="soft feminine voice">Soft feminine</option><option value="energetic upbeat voice">Energetic upbeat</option><option value="whispering intimate tone">Whispering intimate</option><option value="documentary voiceover">Documentary style</option></select>
+              <select id="veo3-audio-bg"><option value="subtle ambient sound">Subtle ambient</option><option value="cinematic orchestral music">Cinematic music</option><option value="rain and city sounds">Rain + city</option><option value="silence with natural audio">Natural silence</option><option value="electronic background score">Electronic score</option><option value="no background audio">No background audio</option></select>
+            </div>
+          </div>
+          <div class="field"><label>VISUAL STYLE</label>
+            <div class="chip-group" id="veo3-style">
+              <div class="chip active" data-val="cinematic 4K">Cinematic 4K</div>
+              <div class="chip" data-val="photorealistic">Photorealistic</div>
+              <div class="chip" data-val="anime">Anime</div>
+              <div class="chip" data-val="documentary">Documentary</div>
+              <div class="chip" data-val="surreal dreamlike">Surreal</div>
+              <div class="chip" data-val="vintage 35mm film">Vintage film</div>
+            </div>
+          </div>
+          <div class="field"><label>CAMERA MOVEMENT</label>
+            <div class="chip-group" id="veo3-cam">
+              <div class="chip active" data-val="slow cinematic push-in">Slow push-in</div>
+              <div class="chip" data-val="orbit around subject">Orbit</div>
+              <div class="chip" data-val="drone aerial flyover">Drone shot</div>
+              <div class="chip" data-val="intimate handheld follow">Handheld</div>
+              <div class="chip" data-val="locked-off static">Static</div>
+              <div class="chip" data-val="smooth tracking shot">Tracking</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>LIGHTING</label>
+              <select id="veo3-light"><option>Neon night</option><option>Golden hour</option><option>Blue hour dusk</option><option>Overcast diffused</option><option>Studio softbox</option><option>Dramatic shadows</option><option>Harsh midday sun</option></select>
+            </div>
+            <div class="field"><label>MOOD</label>
+              <div class="chip-group" id="veo3-mood">
+                <div class="chip active" data-val="mysterious and atmospheric">Mysterious</div>
+                <div class="chip" data-val="epic and grand">Epic</div>
+                <div class="chip" data-val="melancholic and poetic">Melancholic</div>
+                <div class="chip" data-val="tense and suspenseful">Tense</div>
+                <div class="chip" data-val="peaceful and serene">Peaceful</div>
+              </div>
+            </div>
+          </div>
+          <div class="field"><label>EXTRA DETAILS</label><input type="text" id="veo3-extra" placeholder="shallow depth of field, lens flare, no text overlays, anamorphic aspect ratio…"></div>
+          <button class="gen-btn" onclick="generate('veo3')">✦ Generate Veo 3 prompt</button>
+          <div class="output-wrap" id="veo3-out">
+            <div class="out-label">Your Veo 3 prompt</div>
+            <div class="out-box" id="veo3-box"></div>
+            <div class="out-actions">
+              <button class="btn-sec" onclick="copyOut('veo3')">Copy prompt</button>
+              <button class="btn-sec" onclick="savePrompt('veo3')">Save</button>
+              <button class="btn-sec" onclick="resetOut('veo3')">Reset</button>
+            </div>
+            <div class="copy-ok" id="veo3-ok">✓ Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SORA -->
+    <div class="tool-panel" id="panel-sora">
+      <div class="tip-box"><strong>Sora tip:</strong> Describe precise physical actions and environments. Include video length naturally in your scene description (e.g. "a 15-second clip of..."). Sora excels at realistic physics and fluid motion.</div>
+      <div class="card">
+        <div class="card-head"><span class="ch-icon">🌐</span><div class="ch-text"><h2>Sora prompt builder</h2><p>OpenAI — text-to-video</p></div></div>
+        <div class="card-body">
+          <div class="field"><label>SCENE DESCRIPTION</label><textarea id="sora-scene" rows="3" placeholder="A 10-second clip of a golden retriever running along a sandy beach at sunset, waves crashing gently…"></textarea></div>
+          <div class="voice-box">
+            <div class="vb-label"><span>🎙️</span> Voiceover & Narration</div>
+            <textarea id="sora-vo" rows="2" placeholder="Voiceover: 'Some moments are meant to last forever...' (optional)"></textarea>
+            <div class="voice-row">
+              <select id="sora-voice-type"><option value="warm narrator">Warm narrator</option><option value="cinematic deep voice">Cinematic deep</option><option value="soft feminine voice">Soft feminine</option><option value="upbeat energetic">Upbeat energetic</option><option value="no voiceover">No voiceover</option></select>
+              <select id="sora-audio-bg"><option value="natural ambient sound">Natural ambient</option><option value="gentle background music">Gentle music</option><option value="cinematic score">Cinematic score</option><option value="no audio">No audio</option></select>
+            </div>
+          </div>
+          <div class="field"><label>VISUAL STYLE</label>
+            <div class="chip-group" id="sora-style">
+              <div class="chip active" data-val="photorealistic">Photorealistic</div>
+              <div class="chip" data-val="cinematic film look">Cinematic</div>
+              <div class="chip" data-val="3D render">3D render</div>
+              <div class="chip" data-val="documentary style">Documentary</div>
+              <div class="chip" data-val="stop motion">Stop motion</div>
+            </div>
+          </div>
+          <div class="field"><label>CAMERA</label>
+            <div class="chip-group" id="sora-cam">
+              <div class="chip active" data-val="smooth tracking shot">Tracking shot</div>
+              <div class="chip" data-val="low angle looking up">Low angle</div>
+              <div class="chip" data-val="aerial overhead">Aerial</div>
+              <div class="chip" data-val="extreme close-up">Close-up</div>
+              <div class="chip" data-val="wide establishing shot">Wide shot</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>LIGHTING</label><select id="sora-light"><option>Golden hour</option><option>Overcast soft</option><option>Bright midday</option><option>Blue hour</option><option>Moonlit night</option></select></div>
+            <div class="field"><label>EXTRA DETAILS</label><input type="text" id="sora-extra" placeholder="slow motion, film grain, no text…"></div>
+          </div>
+          <button class="gen-btn" onclick="generate('sora')">✦ Generate Sora prompt</button>
+          <div class="output-wrap" id="sora-out">
+            <div class="out-label">Your Sora prompt</div>
+            <div class="out-box" id="sora-box"></div>
+            <div class="out-actions">
+              <button class="btn-sec" onclick="copyOut('sora')">Copy prompt</button>
+              <button class="btn-sec" onclick="savePrompt('sora')">Save</button>
+              <button class="btn-sec" onclick="resetOut('sora')">Reset</button>
+            </div>
+            <div class="copy-ok" id="sora-ok">✓ Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUNWAY -->
+    <div class="tool-panel" id="panel-runway">
+      <div class="tip-box"><strong>Runway tip:</strong> Use motion descriptors like "slowly", "gently", "sweeping". Include length in your scene description. Runway Gen-4 responds best to color grading and motion style details.</div>
+      <div class="card">
+        <div class="card-head"><span class="ch-icon">✈️</span><div class="ch-text"><h2>Runway Gen-4 prompt builder</h2><p>Professional AI video generation</p></div></div>
+        <div class="card-body">
+          <div class="field"><label>SCENE DESCRIPTION</label><textarea id="runway-scene" rows="3" placeholder="An 8-second sweeping shot of a futuristic city skyline at night, flying vehicles weaving between towers…"></textarea></div>
+          <div class="voice-box">
+            <div class="vb-label"><span>🎙️</span> Voiceover & Audio</div>
+            <textarea id="runway-vo" rows="2" placeholder="Voiceover or narration text (optional)…"></textarea>
+            <div class="voice-row">
+              <select id="runway-voice-type"><option value="cinematic narrator">Cinematic narrator</option><option value="deep powerful voice">Deep powerful</option><option value="calm feminine voice">Calm feminine</option><option value="no voiceover">No voiceover</option></select>
+              <select id="runway-audio-bg"><option value="epic orchestral score">Epic orchestral</option><option value="electronic ambient">Electronic ambient</option><option value="minimal score">Minimal score</option><option value="no audio">No audio</option></select>
+            </div>
+          </div>
+          <div class="field"><label>MOTION STYLE</label>
+            <div class="chip-group" id="runway-style">
+              <div class="chip active" data-val="slow deliberate motion">Slow motion</div>
+              <div class="chip" data-val="fast dynamic movement">Fast paced</div>
+              <div class="chip" data-val="fluid smooth movement">Fluid smooth</div>
+              <div class="chip" data-val="glitchy digital aesthetic">Glitchy</div>
+              <div class="chip" data-val="hyper-realistic">Hyper-real</div>
+            </div>
+          </div>
+          <div class="field"><label>CAMERA</label>
+            <div class="chip-group" id="runway-cam">
+              <div class="chip active" data-val="cinematic dolly forward">Dolly forward</div>
+              <div class="chip" data-val="crane rising upward">Crane up</div>
+              <div class="chip" data-val="shaky handheld">Handheld</div>
+              <div class="chip" data-val="locked static tripod">Static</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>COLOR GRADE</label><select id="runway-light"><option>Teal and orange</option><option>Desaturated muted</option><option>Warm vintage tone</option><option>Cold blue steel</option><option>High contrast B&W</option></select></div>
+            <div class="field"><label>EXTRA DETAILS</label><input type="text" id="runway-extra" placeholder="anamorphic lens, film grain…"></div>
+          </div>
+          <button class="gen-btn" onclick="generate('runway')">✦ Generate Runway prompt</button>
+          <div class="output-wrap" id="runway-out">
+            <div class="out-label">Your Runway prompt</div>
+            <div class="out-box" id="runway-box"></div>
+            <div class="out-actions">
+              <button class="btn-sec" onclick="copyOut('runway')">Copy prompt</button>
+              <button class="btn-sec" onclick="savePrompt('runway')">Save</button>
+              <button class="btn-sec" onclick="resetOut('runway')">Reset</button>
+            </div>
+            <div class="copy-ok" id="runway-ok">✓ Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KLING -->
+    <div class="tool-panel" id="panel-kling">
+      <div class="tip-box"><strong>Kling tip:</strong> Describe subjects in detail — clothing, expressions, surroundings. Mention video length directly in your scene (e.g. "a 5-second close-up of..."). Kling excels at anime and portrait-style shots.</div>
+      <div class="card">
+        <div class="card-head"><span class="ch-icon">⚡</span><div class="ch-text"><h2>Kling AI prompt builder</h2><p>High-quality fast video generation</p></div></div>
+        <div class="card-body">
+          <div class="field"><label>SCENE DESCRIPTION</label><textarea id="kling-scene" rows="3" placeholder="A 5-second close-up of a young chef in a white apron carefully plating a gourmet dish, steam rising…"></textarea></div>
+          <div class="voice-box">
+            <div class="vb-label"><span>🎙️</span> Voiceover & Audio</div>
+            <textarea id="kling-vo" rows="2" placeholder="Voiceover or background audio description (optional)…"></textarea>
+            <div class="voice-row">
+              <select id="kling-voice-type"><option value="warm narrator">Warm narrator</option><option value="documentary voice">Documentary</option><option value="no voiceover">No voiceover</option></select>
+              <select id="kling-audio-bg"><option value="warm ambient sound">Warm ambient</option><option value="kitchen natural sounds">Natural sounds</option><option value="light background music">Light music</option><option value="no audio">No audio</option></select>
+            </div>
+          </div>
+          <div class="field"><label>VISUAL STYLE</label>
+            <div class="chip-group" id="kling-style">
+              <div class="chip active" data-val="cinematic">Cinematic</div>
+              <div class="chip" data-val="anime illustration">Anime</div>
+              <div class="chip" data-val="photorealistic">Realistic</div>
+              <div class="chip" data-val="stylized artistic">Stylized</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>CAMERA</label>
+              <div class="chip-group" id="kling-cam">
+                <div class="chip active" data-val="slow push-in">Push-in</div>
+                <div class="chip" data-val="orbit">Orbit</div>
+                <div class="chip" data-val="static">Static</div>
+              </div>
+            </div>
+            <div class="field"><label>LIGHTING</label><select id="kling-light"><option>Warm studio</option><option>Natural daylight</option><option>Golden hour</option><option>Dramatic shadows</option></select></div>
+          </div>
+          <div class="field"><label>EXTRA DETAILS</label><input type="text" id="kling-extra" placeholder="bokeh background, shallow focus, no text overlays…"></div>
+          <button class="gen-btn" onclick="generate('kling')">✦ Generate Kling prompt</button>
+          <div class="output-wrap" id="kling-out">
+            <div class="out-label">Your Kling prompt</div>
+            <div class="out-box" id="kling-box"></div>
+            <div class="out-actions">
+              <button class="btn-sec" onclick="copyOut('kling')">Copy prompt</button>
+              <button class="btn-sec" onclick="savePrompt('kling')">Save</button>
+              <button class="btn-sec" onclick="resetOut('kling')">Reset</button>
+            </div>
+            <div class="copy-ok" id="kling-ok">✓ Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIKA -->
+    <div class="tool-panel" id="panel-pika">
+      <div class="tip-box"><strong>Pika tip:</strong> Pika excels at short stylized and transforming clips. Mention the clip length in your scene description. Focus on one key action or visual transformation.</div>
+      <div class="card">
+        <div class="card-head"><span class="ch-icon">🎨</span><div class="ch-text"><h2>Pika prompt builder</h2><p>Creative stylized AI clips</p></div></div>
+        <div class="card-body">
+          <div class="field"><label>SCENE DESCRIPTION</label><textarea id="pika-scene" rows="3" placeholder="A 3-second loop of a vintage car folding into an origami sculpture, vibrant colors, no text…"></textarea></div>
+          <div class="voice-box">
+            <div class="vb-label"><span>🎙️</span> Audio & Sound</div>
+            <textarea id="pika-vo" rows="2" placeholder="Background audio or sound effect description (optional)…"></textarea>
+            <div class="voice-row">
+              <select id="pika-voice-type"><option value="upbeat energetic narration">Upbeat narration</option><option value="playful voice">Playful voice</option><option value="no voiceover">No voiceover</option></select>
+              <select id="pika-audio-bg"><option value="upbeat electronic music">Upbeat electronic</option><option value="whimsical sound effects">Whimsical SFX</option><option value="no audio">No audio</option></select>
+            </div>
+          </div>
+          <div class="field"><label>VISUAL STYLE</label>
+            <div class="chip-group" id="pika-style">
+              <div class="chip active" data-val="stylized illustration">Stylized</div>
+              <div class="chip" data-val="3D animated">3D animated</div>
+              <div class="chip" data-val="watercolor painting">Watercolor</div>
+              <div class="chip" data-val="comic book style">Comic book</div>
+              <div class="chip" data-val="pixel art">Pixel art</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>MOOD</label><select id="pika-mood"><option>Playful</option><option>Dramatic</option><option>Whimsical</option><option>Dark</option><option>Uplifting</option></select></div>
+            <div class="field"><label>EXTRA DETAILS</label><input type="text" id="pika-extra" placeholder="looping, vibrant colors, no text…"></div>
+          </div>
+          <button class="gen-btn" onclick="generate('pika')">✦ Generate Pika prompt</button>
+          <div class="output-wrap" id="pika-out">
+            <div class="out-label">Your Pika prompt</div>
+            <div class="out-box" id="pika-box"></div>
+            <div class="out-actions">
+              <button class="btn-sec" onclick="copyOut('pika')">Copy prompt</button>
+              <button class="btn-sec" onclick="savePrompt('pika')">Save</button>
+              <button class="btn-sec" onclick="resetOut('pika')">Reset</button>
+            </div>
+            <div class="copy-ok" id="pika-ok">✓ Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-card">
+      <h3>Saved prompts</h3>
+      <div id="saved-list"><div class="saved-empty">No saved prompts yet</div></div>
+    </div>
+    <div class="sb-card">
+      <h3>Pro tips</h3>
+      <div class="tips-list">
+        <div class="tip-row"><span class="tip-num">01</span><span>Include video length in your scene description for precise control</span></div>
+        <div class="tip-row"><span class="tip-num">02</span><span>Veo 3 is the only tool that generates native audio and voiceover</span></div>
+        <div class="tip-row"><span class="tip-num">03</span><span>More detail in your scene = better and more accurate output</span></div>
+        <div class="tip-row"><span class="tip-num">04</span><span>Use "no text overlays" to keep your video clean</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Tara AI &copy; 2025 — AI Video Prompt Generator</p>
+  <p style="margin-top:6px"><a href="index.html">Home</a><a href="#">Privacy</a><a href="#">Terms</a><a href="signup.html">Sign Up</a></p>
+</footer>
+
+<script>
+document.querySelectorAll('.chip-group').forEach(g=>{
+  g.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{g.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');});
+  });
+});
+function getChip(id){var el=document.querySelector('#'+id+' .chip.active');return el?el.dataset.val:'';}
+function getVal(id){var el=document.getElementById(id);return el?el.value:'';}
+
+function switchTool(id,el){
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+var savedPrompts=[];
+
+function generate(tool){
+  var scene=document.getElementById(tool+'-scene').value.trim();
+  if(!scene){var s=document.getElementById(tool+'-scene');s.style.borderColor='rgba(220,38,38,.5)';s.focus();setTimeout(()=>s.style.borderColor='',1500);return;}
+  var style=getChip(tool+'-style');
+  var cam=getChip(tool+'-cam')||'';
+  var mood=getChip(tool+'-mood')||'';
+  var light=getVal(tool+'-light');
+  var extra=getVal(tool+'-extra');
+  var vo=document.getElementById(tool+'-vo')?document.getElementById(tool+'-vo').value.trim():'';
+  var voiceType=getVal(tool+'-voice-type');
+  var audioBg=getVal(tool+'-audio-bg');
+  var pika_mood=tool==='pika'?getVal('pika-mood'):'';
+
+  var lines=[];
+  lines.push(scene);
+  lines.push('');
+  if(style) lines.push('Visual style: '+style+'.');
+  if(cam) lines.push('Camera: '+cam+'.');
+  if(light) lines.push('Lighting/grade: '+light+'.');
+  if(mood) lines.push('Mood: '+mood+'.');
+  if(pika_mood) lines.push('Mood: '+pika_mood+'.');
+  if(extra) lines.push('Additional: '+extra+'.');
+
+  if(vo||voiceType){
+    lines.push('');
+    lines.push('— VOICEOVER & AUDIO —');
+    if(vo) lines.push('Voiceover script: '+vo);
+    if(voiceType&&voiceType!=='no voiceover') lines.push('Voice style: '+voiceType+'.');
+    if(audioBg&&audioBg!=='no audio') lines.push('Background audio: '+audioBg+'.');
+  }
+
+  var toolName=tool==='veo3'?'Veo 3':tool==='sora'?'Sora':tool==='runway'?'Runway Gen-4':tool==='kling'?'Kling AI':'Pika Labs';
+  lines.push('');
+  lines.push('[Optimized for '+toolName+' — high quality, smooth motion, no watermarks or on-screen text unless specified. Video length as described in the scene above.]');
+
+  var prompt=lines.join('\n');
+  document.getElementById(tool+'-box').textContent=prompt;
+  document.getElementById(tool+'-out').style.display='block';
+  window['_p_'+tool]=prompt;
+  setTimeout(()=>document.getElementById(tool+'-out').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function copyOut(tool){
+  var txt=window['_p_'+tool]||'';
+  if(!txt) return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    var ok=document.getElementById(tool+'-ok');
+    ok.style.display='block';
+    setTimeout(()=>ok.style.display='none',2200);
+  });
+}
+
+function savePrompt(tool){
+  var txt=window['_p_'+tool]||'';
+  if(!txt) return;
+  var short=txt.substring(0,55)+'…';
+  savedPrompts.unshift({tool,txt,short});
+  renderSaved();
+}
+
+function renderSaved(){
+  if(!savedPrompts.length){document.getElementById('saved-list').innerHTML='<div class="saved-empty">No saved prompts yet</div>';return;}
+  var html=savedPrompts.slice(0,6).map((s,i)=>`<div class="saved-item"><span class="si-text">${s.short}</span><span class="si-load" onclick="loadSaved(${i})">Load</span></div>`).join('');
+  document.getElementById('saved-list').innerHTML=html;
+}
+
+function loadSaved(i){
+  var s=savedPrompts[i];
+  var tab=document.querySelector('.ttab[onclick*="\''+s.tool+'\'"]');
+  if(tab) switchTool(s.tool,tab);
+  document.getElementById(s.tool+'-box').textContent=s.txt;
+  document.getElementById(s.tool+'-out').style.display='block';
+  window['_p_'+s.tool]=s.txt;
+}
+
+function resetOut(tool){
+  document.getElementById(tool+'-out').style.display='none';
+  document.getElementById(tool+'-scene').value='';
+  var vo=document.getElementById(tool+'-vo');if(vo) vo.value='';
+  var ex=document.getElementById(tool+'-extra');if(ex) ex.value='';
+  window['_p_'+tool]='';
+}
+
+var p=new URLSearchParams(window.location.search);
+var t=p.get('tool');
+if(t){var tb=document.querySelector('.ttab[onclick*="\''+t+'\'"]');if(tb) switchTool(t,tb);}
+</script>
+</body>
+</html>
